@@ -1,4 +1,4 @@
-import itertools, time
+import itertools
 from pprint import pprint
 
 from COMB_base import COMBS
@@ -6,9 +6,9 @@ from COMB_base import COMBS
 # # Generation # # =========================
 # alle möglichkeiten                        x
 # 4. zahl hinzufügen 0 - N-1                x
-# >> lines                                  
+# >> lines                                  x
 # alle kombinationen                        x
-# >> grids                                  
+# >> grids                                  x
 
 # # Prüfung # # ===========================
 # dif 2-3 = 0                               x
@@ -17,14 +17,12 @@ from COMB_base import COMBS
 # z3 <= sum(z2) - z2                           x
 # sum(z1) >= 2                                 x
 # z4 <= sum(z4) - z4                           x
-# sum(z2) % 2 = 0 && sum(z3) % 2 = 0            x
-# sum(z4) > 0 >> z2 > 0 AND z3 > 0                 x
+# sum(z2) % 2 = 0 | sum(z3) % 2 = 0            x
+# sum(z4) >> z2 > 0 AND z3 > 0                 x
 # min 50%: z2 == 2 || z3 == 2 >> z1 == 0       x  
 # not z2[i] == z2[i] == z3[1] == z3[2] == 1    x  
 
-N = int(input("N = "))
-
-start_t = time.time()
+N = 3
 
 # # # generation
 # # add fitht number to every line
@@ -56,44 +54,24 @@ for grid in GRIDS:
             if not line[3] <= z4 - line[3]: break # z4 <= sum(z4) - z4
             if not z2 % 2 == 0 or not z3 % 2 == 0: break # sum(z2) % 2 = 0 | sum(z3) % 2 = 0
             if z4 > 0 and (z2 == 0 and z3 == 0): break # sum(z4) >> z2 > 0 AND z3 > 0
-            if line[0] == 1 and line[1] != 0:
-                break # z1 == 1 >> z2 == 0
         else: # || CHECK 4
-            broken_lines = {}
-
-            for z in range(1, N):
-                broken_lines[z] = [0, 0]
-                print(z, grid)
-                for line in grid:
-                    if not line[3] == z: continue
-                    broken_lines[z][0] += 1
-                    if line[1] == 2 or line[2] == 2:
-                        if line[0] != 0: broken_lines[z][1] += 1
-            
-            pprint(broken_lines)
-            # 1: [5, 2], 2: [3, 0]
-
-            for z, value in broken_lines.items():
-                if value[1] == 0: continue
-                if not value[1] == value[0]/(z+1): break
-                if not value[0] >= (z+1): break
+            broken_lines = 0
+            for line in grid:
+                if line[1] == 2 or line[2] == 2 and line[0] != 0: broken_lines += 1
+            if broken_lines > (len(grid)/2): continue
             else: # || CHECK 5, not z2[1] == z2[2] == z3[1] == z3[2] == 1
                 is_1 = False
                 for line in grid:
                     if line[1] == line[2] == 1:
                         if is_1 == True: break
                         else: is_1 = True
-                else:
-                    POSSIBLE_GRIDS.append(grid)
-
-end_t = time.time()
-time = round(end_t-start_t, 3)
+                else: POSSIBLE_GRIDS.append(grid)
     
 pprint(POSSIBLE_GRIDS)
 
 print("original", len(GRIDS))
 print("possible", len(POSSIBLE_GRIDS))
-with open(f"n{N}-{time}s-{len(POSSIBLE_GRIDS)}", "w") as f: f.write(str(POSSIBLE_GRIDS))
+with open("test.txt", "w") as f: f.write(str(POSSIBLE_GRIDS))
 
 
 
